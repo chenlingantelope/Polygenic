@@ -69,5 +69,3 @@ f.close()
 
 os.system('cat header snp haplotype > Haplotype'+'.txt')
 os.system('rm header snp haplotype haplo.txt haplo.txt-e')
-os.system('../nSL_03032016/nSL -samfile sample.txt -hapfile Haplotype.txt -adfile Ans_Der.txt -maxLen '+str(seqlength)+' > out2.nSL')
-os.system('rm sample.txt Haplotype.txt Ans_Der.txt')
