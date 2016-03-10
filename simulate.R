@@ -18,7 +18,6 @@ mu[3] =        	as.numeric(args[8]); # mean phenotype for genotype 2
 af = 		as.numeric(args[9]); # allelic effect
 model =	0 	#as.numeric(args[10]); # model additive (0), dominant (1), complete (2)
 lookup_file = 	args[11]; # lookup table file
-lookup_file="lookup.1.txt"
 output_file = 	args[12]; # output file text
 niter = args[13]; # how many iterations per scenario
 params = args[14]; # param file
@@ -78,7 +77,7 @@ for (n in 1:niter) {
 
 		cmd=paste(msms_dir, " -N ", Ne, " -ms ", nchroms, " 1 -t ", theta, " -r ", rho, " ", format(nsites,digits=), " -SAA ", nselcoeff, " -SAa ", nselcoeff/2, " -Sp 0.50 -SF 0 ", currentfreq, " -Smark > out2.msms", sep="", collapse="");
 		system(cmd);
-		system(paste("sed -i \"\" '1s/.*/-ms ", nchroms, " 1 -t ", theta, " -r ", rho, " ", nsites, "/' out2.msms", sep="", collapse=""));
+		#system(paste("sed -i \"\" '1s/.*/-ms ", nchroms, " 1 -t ", theta, " -r ", rho, " ", nsites, "/' out2.msms", sep="", collapse=""));
 
 		## ESTIMATE selection coefficient likelihood surface from nSL and a lookup table
 
