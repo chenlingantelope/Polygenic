@@ -26,7 +26,8 @@ cat("\t")
 rm(args);
 
 source("ld_funcs.R")
-
+K=20;nchroms=100;selcoeff=100;currentfreq=0.8;h2=0.75;mu=c(0,5,10);af=5;model=0;lookup_file="lookup_chenling_inter.txt"
+output_file="03092016/sc_es.txt";niter=50;params="params_lookup.txt"
 # read param file
 params=read.table(params, head=F, stringsAsFactors=F, sep="\t")
 Ne=as.numeric(params[which(params[,1]=="NE"),2])[1]
@@ -40,6 +41,7 @@ maxlen=as.numeric(params[which(params[,1]=="MAXLEN"),2])[1]
 
 # read lookup table 
 lookup=read.table(lookup_file, sep="\t", stringsAsFactors=F);
+print("lookup ok")
 # take only the subset 
 lookup=lookup[which((lookup[,1]==nchroms) & (lookup[,3]==currentfreq)),] 
 
@@ -94,7 +96,7 @@ for (n in 1:niter) {
 		ind=which(values[,1]==midpos); 
 		if (length(ind)==1) {
 			nsl=values[ind,2];
-			sc_like=dnorm(nsl, lookup[,4], (lookup[,5]))
+			sc_like=dnorm(nsl, lookup[,4], lookup[,5])
 			#the probability of the nSL being in each selection coefficient category is proportinal to the probability density 
 			#added divide by the sum: Chenling03032016
 			sc_like=sc_like/sum(sc_like)
@@ -189,6 +191,8 @@ for (n in 1:niter) {
                 	} else beta3=NA;
 
 			# PRINT results
+			#c(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like)
+			#c(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like_ld)
 
 			cat(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like, "\n", sep="\t", file=output_file, append=T)
 			cat(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like_ld, "\n", sep="\t", file=paste(output_file,"_ld",sep="",collapse=""), append=T)

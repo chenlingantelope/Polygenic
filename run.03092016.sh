@@ -32,7 +32,7 @@
 # if positive (e.g. 1,2,3) then it uses a polynomial with DEGREE_POLY degrees; if 0 it uses an exponential; if -1 it uses a mixture of exponential
 # the exponential fitting hasn't been fully tested.
 
-Rscript interpolate_mixexp.R lookup_chenling 
+#Rscript interpolate_mixexp.R lookup_chenling 
 
 # This script produces 2 files: the first one (here called lookup_inter.txt) is equal to the look-up table file but values are not taken from the fitted curve; the log file (the second one) reports fitting coefficients.
 
