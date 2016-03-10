@@ -82,7 +82,11 @@ for (n in 1:niter) {
 		## ESTIMATE selection coefficient likelihood surface from nSL and a lookup table
 
 		#system(paste(nsl_dir, " -msfile out2.msms -maxLen ", maxlen, " -msLen ", nsites, " 2> out2.log.nsl > out2.nsl", sep="", collapse=""))
-		system(paste("python ../Chenling/ms2nSL.py ", nsites, sep=""))
+		system(paste("python ms2nSL.py ", nsites, sep=""))
+		cmd=paste(nsl_dir, 'nSL -samfile sample.txt -hapfile Haplotype.txt -adfile Ans_Der.txt -maxLen ', nsites,' > out2.nsl',sep="")
+		system(cmd)
+		system('rm sample.txt Haplotype.txt Ans_Der.txt')
+
 		values=read.table("out2.nsl", header=T, stringsAsFactors=F)[,2:3]
 		
 		# get value for selected site (in the middle)
