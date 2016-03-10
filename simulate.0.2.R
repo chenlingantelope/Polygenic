@@ -18,7 +18,6 @@ mu[3] =        	as.numeric(args[8]); # mean phenotype for genotype 2
 af = 		as.numeric(args[9]); # allelic effect
 model =	0 	#as.numeric(args[10]); # model additive (0), dominant (1), complete (2)
 lookup_file = 	args[11]; # lookup table file
-lookup_file="lookup.1.txt"
 output_file = 	args[12]; # output file text
 niter = args[13]; # how many iterations per scenario
 params = args[14]; # param file
@@ -27,7 +26,8 @@ cat("\t")
 rm(args);
 
 source("ld_funcs.R")
-
+#K=20;nchroms=100;selcoeff=100;currentfreq=0.8;h2=0.75;mu=c(0,5,10);af=5;model=0;lookup_file="lookup_chenling_inter.txt"
+#output_file="03092016/sc_es.txt";niter=50;params="params_lookup.txt"
 # read param file
 params=read.table(params, head=F, stringsAsFactors=F, sep="\t")
 Ne=as.numeric(params[which(params[,1]=="NE"),2])[1]
@@ -41,6 +41,7 @@ maxlen=as.numeric(params[which(params[,1]=="MAXLEN"),2])[1]
 
 # read lookup table 
 lookup=read.table(lookup_file, sep="\t", stringsAsFactors=F);
+print("lookup ok")
 # take only the subset 
 lookup=lookup[which((lookup[,1]==nchroms) & (lookup[,3]==currentfreq)),] 
 
@@ -78,12 +79,16 @@ for (n in 1:niter) {
 
 		cmd=paste(msms_dir, " -N ", Ne, " -ms ", nchroms, " 1 -t ", theta, " -r ", rho, " ", format(nsites,digits=), " -SAA ", nselcoeff, " -SAa ", nselcoeff/2, " -Sp 0.50 -SF 0 ", currentfreq, " -Smark > out2.msms", sep="", collapse="");
 		system(cmd);
-		system(paste("sed -i \"\" '1s/.*/-ms ", nchroms, " 1 -t ", theta, " -r ", rho, " ", nsites, "/' out2.msms", sep="", collapse=""));
+#		system(paste("sed -i \"\" '1s/.*/-ms ", nchroms, " 1 -t ", theta, " -r ", rho, " ", nsites, "/' out2.msms", sep="", collapse=""));
 
 		## ESTIMATE selection coefficient likelihood surface from nSL and a lookup table
 
 		#system(paste(nsl_dir, " -msfile out2.msms -maxLen ", maxlen, " -msLen ", nsites, " 2> out2.log.nsl > out2.nsl", sep="", collapse=""))
-		system(paste("python ../Chenling/ms2nSL.py ", nsites, sep=""))
+		system(paste("python ms2nSL.py ", nsites, sep=""))
+		cmd=paste(nsl_dir, 'nSL -samfile sample.txt -hapfile Haplotype.txt -adfile Ans_Der.txt -maxLen ', nsites,' > out2.nsl',sep="")
+		system(cmd)
+		system('rm sample.txt Haplotype.txt Ans_Der.txt')
+
 		values=read.table("out2.nsl", header=T, stringsAsFactors=F)[,2:3]
 		
 		# get value for selected site (in the middle)
@@ -91,7 +96,7 @@ for (n in 1:niter) {
 		ind=which(values[,1]==midpos); 
 		if (length(ind)==1) {
 			nsl=values[ind,2];
-			sc_like=dnorm(nsl, lookup[,4], (lookup[,5]))
+			sc_like=dnorm(nsl, lookup[,4], lookup[,5])
 			#the probability of the nSL being in each selection coefficient category is proportinal to the probability density 
 			#added divide by the sum: Chenling03032016
 			sc_like=sc_like/sum(sc_like)
@@ -186,6 +191,8 @@ for (n in 1:niter) {
                 	} else beta3=NA;
 
 			# PRINT results
+			#c(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like)
+			#c(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like_ld)
 
 			cat(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like, "\n", sep="\t", file=output_file, append=T)
 			cat(n, h2, mu, af, selcoeff, nselcoeff, beta[1,1], beta[2,1], beta3, sc_like_ld, "\n", sep="\t", file=paste(output_file,"_ld",sep="",collapse=""), append=T)
